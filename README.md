@@ -2,6 +2,11 @@
 
 A hosted assessment demo of a private matchmaker workspace: an open client book, complete client context, considered comparisons and editable introduction drafts. The current interface uses DM Sans, rose-white surfaces and mulberry accents. The illustrative couple photograph appears at sign-in only. All people and profile details are seeded sample data.
 
+## Assessment links
+
+- Public demo: https://tdc-matchmaker-mvp-sigma.vercel.app
+- Source: https://github.com/dhavalkhandhadia/tdc-matchmaker-mvp
+
 ## Demo sign-in
 
 - Email: `ananya@thedatecrew.com`
