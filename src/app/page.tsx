@@ -1,8 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowDown, ArrowUpRight } from 'lucide-react';
-
-const applyUrl = 'https://thedatecrew.club/apply/welcome';
+import { ArrowDown, ArrowRight } from 'lucide-react';
 
 export default function HomePage() {
   return <>
@@ -22,7 +20,7 @@ export default function HomePage() {
           <h1 className="max-w-[600px] text-[clamp(2.8rem,6vw,5rem)] leading-[1.04] tracking-[-.065em] text-ink">Love deserves a little more thought.</h1>
           <p className="mt-6 max-w-[440px] text-[16px] leading-7 text-muted sm:text-[17px] sm:leading-8">We’re fixing how India finds love, one thoughtful introduction at a time. Real matchmakers help serious singles meet someone who feels right.</p>
           <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3">
-            <a href={applyUrl} className="pressable inline-flex min-h-12 items-center gap-2 rounded-full bg-accent px-6 text-[13px] font-medium text-white transition-colors hover:bg-accent-strong">Start with a conversation<ArrowUpRight size={15} aria-hidden /></a>
+            <Link href="/login" className="pressable inline-flex min-h-12 items-center gap-2 rounded-full bg-accent px-6 text-[13px] font-medium text-white transition-colors hover:bg-accent-strong">Matchmaker sign in<ArrowRight size={15} aria-hidden /></Link>
             <a href="#how-it-works" className="touch-link inline-flex items-center gap-2 text-[13px] font-medium text-accent underline decoration-line-strong underline-offset-4 hover:text-accent-strong">How it works<ArrowDown size={14} aria-hidden /></a>
           </div>
         </div>
@@ -58,7 +56,7 @@ export default function HomePage() {
         <div>
           <p className="mb-4 text-[11px] font-medium uppercase tracking-[.16em] text-accent">A good beginning</p>
           <h2 className="max-w-[440px] text-[clamp(2rem,4vw,3.25rem)] leading-[1.08] tracking-[-.055em] text-ink">One conversation can change the way you meet.</h2>
-          <a href={applyUrl} className="touch-link mt-6 inline-flex items-center gap-2 text-[13px] font-medium text-accent underline decoration-line-strong underline-offset-4">Talk to a matchmaker<ArrowUpRight size={14} aria-hidden /></a>
+          <Link href="/login" className="touch-link mt-6 inline-flex items-center gap-2 text-[13px] font-medium text-accent underline decoration-line-strong underline-offset-4">Matchmaker sign in<ArrowRight size={14} aria-hidden /></Link>
         </div>
         <ol className="divide-y divide-line border-y border-line">
           {[
