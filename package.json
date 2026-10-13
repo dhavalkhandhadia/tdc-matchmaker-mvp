@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && node scripts/check-matching.cjs && node scripts/check-introduction-lifecycle.cjs && node scripts/check-storage.cjs",
+    "check": "npm run typecheck && node scripts/check-matching.cjs && node scripts/check-comparison.cjs && node scripts/check-introduction-lifecycle.cjs && node scripts/check-storage.cjs",
     "check:api": "node scripts/check-api.cjs"
   },
   "dependencies": {

@@ -12,7 +12,7 @@ A matchmaking assessment demo with a public brand homepage and a matchmaker work
 
 ## Assessment coverage
 
-Ten assigned clients have complete biodata, editable journey stages and call notes. Each has 105 opposite-gender sample profiles. Male suggestions always satisfy the four mandatory age, income, height and children rules. Female ranking considers career/income, values and children, relocation, age/height and lifestyle. Comparisons show the facts, scoring dimensions, alignment and discussion points.
+Ten assigned clients have complete biodata, editable journey stages and call notes. Each has 105 opposite-gender sample profiles. Male suggestions always satisfy the four mandatory age, income, height and children rules. Female ranking considers career/income, values and children, relocation, age/height and lifestyle. Comparisons explain numerical differences with proportional bars and gender-specific context: male required rules, female weighted preferences, and neutral career/education backgrounds.
 
 **Send match** opens a mock introduction with candidate information. The editor supports three local tones, optional real Gemini generation, editing, saved-draft reopening and failure recovery. Saving records the draft in this browser; no real email is sent.
 
