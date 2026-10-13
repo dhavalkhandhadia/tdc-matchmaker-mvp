@@ -60,6 +60,7 @@ export function SendMatchModal({ customer, match, notes, existingDraft, onClose,
   if (!match && !existingDraft) return null;
   const candidateFullName = match ? `${match.candidate.firstName} ${match.candidate.lastName}` : existingDraft!.candidateName;
   const customerFullName = `${customer.firstName} ${customer.lastName}`;
+  const providerFailed = providerMessage.startsWith('Gemini could not respond.');
 
   const applyTone = (nextTone: ToneType) => {
     if (!match) return;
@@ -147,9 +148,9 @@ export function SendMatchModal({ customer, match, notes, existingDraft, onClose,
         </div>
         {pendingTone && <div role="alert" className="rounded-[14px] bg-warning-soft p-3 text-[12px] text-muted"><p>Changing tone replaces your edits.</p><div className="mt-2 flex gap-2"><Button type="button" size="sm" variant="outline" onClick={() => { setPendingTone(null); subjectRef.current?.focus(); }}>Keep edits</Button><Button type="button" size="sm" onClick={() => { applyTone(pendingTone); subjectRef.current?.focus(); }}>Replace draft</Button></div></div>}
         {pendingGemini && <div role="alert" className="rounded-[16px] bg-warning-soft p-4 text-[12px]"><p>Gemini will replace this draft using the profile and recent notes.</p><div className="mt-3 flex gap-2"><Button type="button" size="sm" variant="outline" onClick={() => setPendingGemini(false)}>Keep draft</Button><Button type="button" size="sm" onClick={generateWithGemini}>Replace with Gemini</Button></div></div>}
-        <p role="status" aria-live="polite"  className="min-h-4 text-[11px] leading-4 text-faint">{providerMessage}</p>
-        {geminiAvailable && <p className="rounded-[14px] bg-warning-soft px-3.5 py-3 text-[11px] leading-4 text-muted">Clicking “Draft with Gemini” shares names, age, city, work, education, values, lifestyle preferences, match reasons and up to five recent notes with Google. Review the result; no email is sent.</p>}
-        {geminiAvailable === false && <p className="text-[11px] text-faint">Local draft uses profile details. Review call notes before saving.</p>}
+        <p role={providerFailed ? 'alert' : 'status'} aria-live="polite" className={`min-h-4 text-[11px] leading-4 ${providerFailed ? 'rounded-[14px] bg-warning-soft px-3.5 py-3 text-warning' : 'text-faint'}`}>{providerMessage}</p>
+        {geminiAvailable && <details className="border-y border-line py-1 text-[11px] leading-5 text-muted"><summary>What Gemini receives when you draft</summary><p className="pb-3 pt-1">Google receives names, age, city, work, education, values, lifestyle preferences, match reasons and up to five recent notes. Contact details and dates of birth are excluded. Review the result; no email is sent.</p></details>}
+        {geminiAvailable === false && <p role="status" className="rounded-[14px] bg-warning-soft px-3.5 py-3 text-[11px] leading-4 text-muted"><span className="font-medium text-warning">Gemini unavailable. </span>Local draft uses profile details. Review call notes before saving.</p>}
 
         {!match && <p className="rounded-[16px] bg-warning-soft p-4 text-[12px] leading-5">This saved introduction is outside the current shortlist. You can review and edit it; automatic redrafting is unavailable.</p>}
         {highlights.length > 0 && <details className="rounded-[14px] bg-wash px-4 py-3"><summary className="text-[12px] text-muted">Shortlist context</summary><ul className="mt-3 space-y-2 text-[12px] leading-6 text-muted">{highlights.map((item, index) => <li key={index}>{item}</li>)}</ul></details>}

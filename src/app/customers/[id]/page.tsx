@@ -1,9 +1,10 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound, useParams } from 'next/navigation';
-import { ArrowLeft, Check, Search, X } from 'lucide-react';
+import { ArrowLeft, Check, MapPin, Search, UsersRound, X } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { CandidateBiodataModal } from '@/components/CandidateBiodataModal';
 import { SendMatchModal } from '@/components/SendMatchModal';
@@ -11,7 +12,7 @@ import { ASSIGNED_CUSTOMERS, DUMMY_POOL_PROFILES } from '@/lib/seedData';
 import { getRankedMatchesForCustomer } from '@/lib/matchingEngine';
 import { addCustomerNote, getCustomerNotes, getCustomersWithPersistedState, getSentMatches, getSession, recordSentMatch, updateCustomerStage } from '@/lib/storage';
 import { JourneyStage, MatchmakerNote, MatchResult, SentMatchRecord } from '@/lib/types';
-import { Button, Input, Textarea } from '@/components/ui/primitives';
+import { Button, Input, ProfileAvatar, Textarea } from '@/components/ui/primitives';
 import { Select } from '@/components/ui/Select';
 
 const STAGES: JourneyStage[] = ['Onboarding', 'Profile Verified', 'Sourcing Matches', 'Matches Sent', 'In Dates / Feedback', 'Matched / Paused'];
@@ -103,10 +104,13 @@ export default function CustomerPage() {
 
       <header className="mt-6 border-b border-line pb-6">
         <div className="flex flex-wrap items-start justify-between gap-5">
-          <div className="min-w-0">
+          <div className="flex min-w-0 items-center gap-4 sm:gap-5">
+            <span aria-hidden><ProfileAvatar profileId={customer.id} firstName={customer.firstName} lastName={customer.lastName} gender={customer.gender} size="xl" /></span>
+            <div className="min-w-0">
             <p className="mb-2 text-[11px] text-accent">Sample client · {customer.isVerified ? 'Verified' : 'Verification pending'}</p>
             <h1 className="font-display text-[34px] leading-tight tracking-[-.04em] text-accent sm:text-[42px]">{customer.firstName} {customer.lastName}</h1>
             <p className="mt-2 text-[13px] text-muted">{customer.age} · {customer.city}, {customer.country} · {customer.maritalStatus}</p>
+            </div>
           </div>
           <div className="w-full sm:w-auto">
             <label htmlFor="client-stage" className="mb-2 block text-[11px] text-muted">Journey stage</label>
@@ -168,16 +172,55 @@ export default function CustomerPage() {
           </div>
           <p role="status" className="py-3 text-[11px] text-muted">{matches.results.length} profiles · Fit guide out of 100, not a prediction</p>
           <div className="divide-y divide-line">
-            {matches.results.slice(0, limit).map((match) => { const person = match.candidate; const sent = drafts.some((draft) => draft.candidateId === person.id); return <article key={person.id} className="py-6 first:pt-3">
+            {matches.results.slice(0, limit).map((match) => {
+              const person = match.candidate;
+              const sent = drafts.some((draft) => draft.candidateId === person.id);
+              const childrenSummary = customer.wantKids === person.wantKids
+                ? person.wantKids === 'Yes'
+                  ? 'Both want children'
+                  : person.wantKids === 'No'
+                    ? 'Neither wants children'
+                    : 'Both are unsure about children'
+                : `${customer.firstName}: ${customer.wantKids.toLowerCase()} · ${person.firstName}: ${person.wantKids.toLowerCase()}`;
+              const relocationSummary = customer.city === person.city
+                ? `Both in ${person.city}`
+                : person.openToRelocate === 'Yes'
+                  ? `${person.firstName} is open to relocating`
+                  : customer.openToRelocate === 'Yes'
+                    ? `${customer.firstName} is open to relocating`
+                    : person.openToRelocate === 'Maybe' || customer.openToRelocate === 'Maybe'
+                      ? `Worth discussing · ${customer.city} ↔ ${person.city}`
+                      : `Neither is open to relocating · ${customer.city} ↔ ${person.city}`;
+              return <article key={person.id} className="py-6 first:pt-3">
               <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0"><h3 className="font-display text-[24px] leading-tight tracking-[-.03em] text-ink">{person.firstName} {person.lastName}</h3><p className="mt-2 text-[12px] text-muted">{person.age} · {person.city} · {person.heightDisplay}</p></div>
+                <div className="flex min-w-0 items-center gap-3"><span aria-hidden><ProfileAvatar profileId={person.id} firstName={person.firstName} lastName={person.lastName} gender={person.gender} size="lg" /></span><div className="min-w-0"><h3 className="font-display text-[24px] leading-tight tracking-[-.03em] text-ink">{person.firstName} {person.lastName}</h3><p className="mt-2 text-[12px] text-muted">{person.age} · {person.city} · {person.heightDisplay}</p></div></div>
                 <div className="shrink-0 text-right"><span className="font-display text-[25px] leading-none text-accent">{match.totalScore}<span className="text-[12px] text-muted"> / 100</span></span><p className="mt-1.5 text-[10px] text-muted">Fit guide</p></div>
               </div>
-              <p className="mt-3 line-clamp-2 text-[13px] leading-6 text-muted">{person.bio}</p><p className="mt-2 text-[12px] leading-6 text-accent-strong">{match.greenFlags.slice(-2).join(' · ')}</p>
-              {match.frictionFlags[0] && <p className="mt-1 text-[12px] leading-5 text-accent">To discuss: {match.frictionFlags[0]}</p>}
-              <div className="mt-4 flex flex-wrap items-center gap-2.5"><Button size="md" variant="outline" onClick={() => setInspect(match)}>Compare details</Button><Button size="md" onClick={() => { setOpenDraft(null); setSend(match); }}>{sent ? 'Open saved draft' : 'Draft introduction'}</Button>{match.passesAllStrictRules && <span className="ml-auto text-[10px] text-calm">Core rules align</span>}</div>
-            </article>; })}
-            {matches.results.length === 0 && <div className="py-12 text-center"><h3 className="font-display text-[23px] text-accent">A little more room to explore.</h3><p className="mt-2 text-[13px] text-muted">No profiles match these filters.</p><Button variant="ghost" className="mt-4" onClick={() => { setSearch(''); setCity('All'); setDiet('All'); setStrictOnly(false); setLimit(12); }}>Clear filters</Button></div>}
+              <div className="mt-5 grid gap-4 border-y border-line py-4 xl:grid-cols-[1.15fr_.9fr_1.25fr]">
+                <section className="min-w-0" aria-label={`${person.firstName}'s work and education`}>
+                  <h4 className="text-[10px] font-medium uppercase tracking-[.15em] text-accent">Work & study</h4>
+                  <p className="mt-3 text-[13px] leading-5 text-ink"><span className="font-medium">{person.designation}</span><span className="text-muted"> · {person.company}</span></p>
+                  <p className="mt-1 text-[12px] leading-5 text-muted">{person.degree} · {person.undergradCollege}</p>
+                </section>
+                <section className="min-w-0 border-t border-line pt-4 xl:border-l xl:border-t-0 xl:pl-5 xl:pt-0" aria-label={`${person.firstName}'s interests`}>
+                  <h4 className="text-[10px] font-medium uppercase tracking-[.15em] text-accent">After hours</h4>
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {person.hobbies.length > 0 ? person.hobbies.slice(0, 2).map((hobby) => <li key={hobby} className="inline-flex min-h-9 items-center rounded-full bg-accent-soft/55 px-3.5 text-[12px] text-ink">{hobby}</li>) : <li className="text-[12px] text-muted">Not shared yet</li>}
+                  </ul>
+                </section>
+                <section className="min-w-0 border-t border-line pt-4 xl:border-l xl:border-t-0 xl:pl-5 xl:pt-0" aria-label="Shared preferences">
+                  <h4 className="text-[10px] font-medium uppercase tracking-[.15em] text-accent">Where your lives align</h4>
+                  <ul className="mt-3 space-y-2.5">
+                    <li className="flex items-center gap-2.5"><span className="grid size-8 shrink-0 place-items-center rounded-full bg-accent-soft/55 text-accent"><UsersRound size={14} aria-hidden="true" /></span><p className="min-w-0 text-[12px] leading-5"><span className="font-medium text-ink">Children</span><span className="text-muted"> · {childrenSummary}</span></p></li>
+                    <li className="flex items-center gap-2.5"><span className="grid size-8 shrink-0 place-items-center rounded-full bg-accent-soft/55 text-accent"><MapPin size={14} aria-hidden="true" /></span><p className="min-w-0 text-[12px] leading-5"><span className="font-medium text-ink">Relocation</span><span className="text-muted"> · {relocationSummary}</span></p></li>
+                  </ul>
+                </section>
+              </div>
+              {match.frictionFlags[0] && <p className="mt-3 text-[12px] leading-5 text-accent">Worth discussing: {match.frictionFlags[0]}</p>}
+              <div className="mt-4 flex flex-wrap items-center gap-2.5"><Button size="md" variant="outline" onClick={() => setInspect(match)}>Compare details</Button><Button size="md" onClick={() => { setOpenDraft(null); setSend(match); }}>{sent ? 'Open saved draft' : 'Send match'}</Button>{match.passesAllStrictRules && <span className="ml-auto text-[10px] text-calm">Core rules align</span>}</div>
+              </article>;
+            })}
+            {matches.results.length === 0 && <div className="py-12 text-center"><Image src="/images/tdc-empty-bougainvillea-v1.webp" alt="" aria-hidden width={120} height={80} className="mx-auto mb-2 h-16 w-24 object-contain" /><h3 className="font-display text-[23px] text-accent">A little more room to explore.</h3><p className="mt-2 text-[13px] text-muted">No profiles match these filters.</p><Button variant="ghost" className="mt-4" onClick={() => { setSearch(''); setCity('All'); setDiet('All'); setStrictOnly(false); setLimit(12); }}>Clear filters</Button></div>}
           </div>
           {matches.results.length > limit && <div className="flex justify-center border-t border-line py-6"><Button variant="outline" onClick={() => setLimit((n) => n + 12)}>Show 12 more</Button></div>}
         </section>

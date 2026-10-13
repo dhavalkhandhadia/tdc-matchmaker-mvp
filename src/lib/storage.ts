@@ -21,7 +21,8 @@ export function getSession(): MatchmakerSession | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.AUTH);
-    return raw ? JSON.parse(raw) : null;
+    const session = raw ? JSON.parse(raw) : null;
+    return session && ['username', 'name', 'role', 'loggedInAt'].every((key) => typeof session[key] === 'string' && session[key].trim()) ? session : null;
   } catch {
     return null;
   }

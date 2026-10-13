@@ -81,12 +81,12 @@ export async function POST(req: NextRequest) {
     })}`;
     let response: Response;
     for (let attempt = 0; ; attempt++) {
-      response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent", {
+      response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
         body: JSON.stringify({
           contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: { responseMimeType: "application/json", temperature: 0.6 },
+          generationConfig: { responseMimeType: "application/json" },
         }),
         signal: AbortSignal.timeout(20000),
       });

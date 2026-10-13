@@ -32,7 +32,7 @@ export function Dialog({ open, onClose, labelledBy, className, children }: {
       const bounds = event.currentTarget.getBoundingClientRect();
       if (event.target === event.currentTarget && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) onClose();
     }}
-    className={cn('animate-modal max-h-[90dvh] w-[calc(100%_-_24px)] overflow-hidden rounded-[28px] border border-line bg-surface p-0 text-ink shadow-[0_24px_100px_rgba(40,33,28,.2)]', className)}>
+    className={cn('animate-modal m-auto max-h-[90dvh] w-[calc(100%_-_24px)] overflow-hidden rounded-[28px] border border-line bg-surface p-0 text-ink shadow-[0_24px_100px_rgba(40,33,28,.2)]', className)}>
     <div className="dialog-content max-h-[calc(90dvh_-_2px)] overflow-y-auto rounded-[27px]">{children}</div>
   </dialog>;
 }

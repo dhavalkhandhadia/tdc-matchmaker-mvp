@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Image from 'next/image';
 import { JourneyStage } from '@/lib/types';
 
 export function cn(...classes: Array<string | false | null | undefined>) {
@@ -143,16 +144,22 @@ export function ProfileAvatar({
   firstName,
   lastName,
   gender,
+  profileId,
   size = 'md',
+  className,
 }: {
   firstName: string;
   lastName: string;
   gender: 'Male' | 'Female';
-  size?: 'sm' | 'md' | 'lg';
+  profileId?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
 }) {
   const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   const sizeClass =
-    size === 'sm'
+    size === 'xl'
+      ? 'size-16 text-[22px] sm:size-20'
+      : size === 'sm'
       ? 'w-8 h-8 text-[11.5px]'
       : size === 'lg'
       ? 'w-12 h-12 text-[15px]'
@@ -166,12 +173,15 @@ export function ProfileAvatar({
   return (
     <div
       className={cn(
-        'rounded-full border flex items-center justify-center font-display font-medium shrink-0 select-none',
+        'relative aspect-square overflow-hidden rounded-full border flex items-center justify-center font-display font-medium shrink-0 select-none',
         sizeClass,
-        toneClass
+        toneClass,
+        className
       )}
     >
-      {initials}
+      {profileId && /^(cust-\d+|pool-[fm]-\d+)$/.test(profileId)
+        ? <Image src={`/images/profiles/${profileId}.webp`} alt="" aria-hidden fill sizes={size === 'xl' ? '(min-width: 640px) 80px, 64px' : size === 'lg' ? '48px' : size === 'sm' ? '32px' : '36px'} className="object-cover" />
+        : initials}
     </div>
   );
 }

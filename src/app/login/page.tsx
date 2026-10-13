@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
@@ -39,7 +40,7 @@ export default function LoginPage() {
   };
   return <main id="main-content" className="mx-auto flex min-h-screen max-w-[1440px] flex-col px-5 sm:px-10 lg:px-14">
     <header className="flex min-h-24 items-center justify-between gap-4">
-      <span className="text-[24px] font-medium tracking-[-.055em] sm:text-[28px]">the date crew</span>
+      <Link href="/" className="text-[24px] font-medium tracking-[-.055em] transition-colors hover:text-accent sm:text-[28px]">the date crew</Link>
       <span className="text-[12px] text-muted">The matchmaker space</span>
     </header>
     <div className="grid flex-1 items-center gap-10 pb-10 lg:grid-cols-[.9fr_1.1fr] lg:gap-8 lg:pb-8">
