@@ -16,6 +16,8 @@
   --color-calm-soft: var(--calm-soft);
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
 }
 
 :root {
@@ -34,6 +36,8 @@
   --calm-soft: #E7EDF3;
   --warning: #8A5C45;
   --warning-soft: #F5E8E2;
+  --success: #35654E;
+  --success-soft: #E8F2EC;
   --scroll-thumb: #C6A8BA;
   --scroll-thumb-hover: #9F7790;
   --ease-out: cubic-bezier(.23, 1, .32, 1);
@@ -80,8 +84,29 @@ textarea::-webkit-resizer { background: var(--surface) url("data:image/svg+xml,%
 .select-trigger[data-state=open] { border-color: var(--accent); }
 .select-trigger:disabled { cursor: not-allowed; opacity: .5; }
 .select-chevron { display: flex; flex: none; color: var(--muted); }
+.select-chevron { transition: transform 160ms var(--ease-out); }
+.select-trigger[data-motion=instant] .select-chevron { transition: none; }
 .select-trigger[data-state=open] .select-chevron { transform: rotate(180deg); }
 .select-menu { z-index: 50; min-width: var(--radix-select-trigger-width); max-width: calc(100vw - 24px); max-height: min(352px, var(--radix-select-content-available-height)); overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); padding: 6px; color: var(--ink); box-shadow: 0 2px 6px rgb(61 43 59 / .05), 0 16px 40px -12px rgb(61 43 59 / .23); }
+.select-menu { transform-origin: var(--radix-select-content-transform-origin); }
+.select-menu[data-state=open] { animation: select-in 160ms var(--ease-out); }
+.select-menu[data-state=closed] { animation: select-out 120ms var(--ease-out); }
+.select-menu[data-motion=instant] { animation: none !important; }
+@keyframes select-in { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes select-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: scale(.98); } }
+@keyframes select-fade-out { from { opacity: 1; } to { opacity: 0; } }
+.disclosure { border-radius: 16px; transition: background-color 150ms ease; }
+.disclosure.is-open { background: color-mix(in srgb, var(--wash) 55%, transparent); }
+.disclosure-trigger { display: flex; width: 100%; min-height: 52px; align-items: center; justify-content: space-between; gap: 12px; border-radius: 16px; padding: 10px 12px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.disclosure-chevron { display: grid; flex: none; width: 28px; height: 28px; place-items: center; border-radius: 50%; background: var(--wash); color: var(--accent); }
+.shortlist-list { container-type: inline-size; }
+.candidate-facts { display: grid; gap: 12px; }
+.candidate-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 16px; }
+@container (min-width: 560px) {
+  .candidate-facts { grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); gap: 24px; margin-left: 60px; }
+  .candidate-alignment { border-left: 1px solid var(--line); padding-left: 24px; }
+  .candidate-actions { margin-left: 60px; }
+}
 .select-viewport { padding: 0; }
 .select-option { position: relative; display: flex; min-height: 44px; align-items: center; gap: 12px; border-radius: 14px; padding: 10px 38px 10px 12px; font-size: 13px; line-height: 20px; cursor: pointer; user-select: none; outline: none; }
 .select-option[data-state=checked] { color: var(--accent-strong); background: var(--accent-soft); }
@@ -106,6 +131,7 @@ summary, .touch-link { min-height: 44px; align-content: center; }
 @media (hover: hover) and (pointer: fine) {
   ::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
   .select-trigger:hover { border-color: var(--line-strong); }
+  .disclosure-trigger:hover { background: var(--wash); }
   .client-entry:hover { background: var(--surface); }
   .client-entry:hover .entry-arrow { transform: translateX(4px); }
 }
@@ -124,6 +150,10 @@ summary, .touch-link { min-height: 44px; align-content: center; }
   .animate-modal { animation: fade-in 100ms linear; }
   dialog::backdrop { animation-duration: 100ms; }
   .workspace-spinner { animation: none; }
+  .select-chevron, .disclosure { transition: none; }
+  .select-menu[data-state=open] { animation: fade-in 100ms linear; }
+  .select-menu[data-state=closed] { animation: select-fade-out 100ms linear; }
+  .select-menu[data-motion=instant] { animation: none !important; }
 }
 @media (forced-colors: active) {
   input[type=checkbox] { appearance: auto; }

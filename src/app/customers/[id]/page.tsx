@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound, useParams } from 'next/navigation';
@@ -12,8 +13,9 @@ import { ASSIGNED_CUSTOMERS, DUMMY_POOL_PROFILES } from '@/lib/seedData';
 import { getRankedMatchesForCustomer } from '@/lib/matchingEngine';
 import { addCustomerNote, getCustomerNotes, getCustomersWithPersistedState, getSentMatches, getSession, recordSentMatch, updateCustomerStage } from '@/lib/storage';
 import { JourneyStage, MatchmakerNote, MatchResult, SentMatchRecord } from '@/lib/types';
-import { Button, Input, ProfileAvatar, Textarea } from '@/components/ui/primitives';
+import { Button, FitBadge, Input, ProfileAvatar, Textarea } from '@/components/ui/primitives';
 import { Select } from '@/components/ui/Select';
+import { Disclosure } from '@/components/ui/Disclosure';
 
 const STAGES: JourneyStage[] = ['Onboarding', 'Profile Verified', 'Sourcing Matches', 'Matches Sent', 'In Dates / Feedback', 'Matched / Paused'];
 
@@ -44,6 +46,7 @@ export default function CustomerPage() {
   const [stageMessage, setStageMessage] = useState('Changes save automatically');
   const [stageError, setStageError] = useState(false);
   const [noteError, setNoteError] = useState('');
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (!toast) return;
@@ -98,7 +101,11 @@ export default function CustomerPage() {
 
   return <div className="min-h-screen bg-canvas text-ink">
     <Navbar />
-    {toast && <div role="status" className="fixed bottom-5 left-5 right-5 z-40 flex items-center gap-3 rounded-[20px] bg-accent py-2 pl-4 pr-2 text-[13px] text-white shadow-lg sm:left-auto sm:max-w-md"><Check size={16} aria-hidden className="shrink-0" /><span>{toast}</span><button type="button" aria-label="Dismiss notification" onClick={() => setToast('')} className="pressable ml-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-full"><X size={15} aria-hidden /></button></div>}
+    <AnimatePresence>{toast && <motion.div key="saved-feedback" role="status"
+      initial={{ opacity: 0, transform: reducedMotion ? 'none' : 'translateY(6px)' }} animate={{ opacity: 1, transform: 'none' }}
+      exit={{ opacity: 0, transform: reducedMotion ? 'none' : 'translateY(4px)', transition: { duration: 0.14 } }}
+      transition={{ duration: reducedMotion ? 0.1 : 0.18, ease: [0.23, 1, 0.32, 1] }}
+      className="fixed bottom-5 left-5 right-5 z-40 flex items-center gap-3 rounded-[20px] border border-success/20 bg-success-soft py-2 pl-4 pr-2 text-[13px] text-success shadow-lg sm:left-auto sm:max-w-md"><Check size={16} aria-hidden className="shrink-0" /><span>{toast}</span><button type="button" aria-label="Dismiss notification" onClick={() => setToast('')} className="pressable ml-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-full"><X size={15} aria-hidden /></button></motion.div>}</AnimatePresence>
     <main id="main-content" tabIndex={-1} className="mx-auto max-w-[1320px] px-5 pb-16 pt-6 sm:px-8">
       <Link href="/dashboard" className="touch-link inline-flex items-center gap-2 rounded-md text-[12px] text-muted hover:text-accent"><ArrowLeft size={14} /> Client book</Link>
 
@@ -133,18 +140,18 @@ export default function CustomerPage() {
               <Field label="Children">{customer.wantKids}</Field><Field label="Relocation">{customer.openToRelocate}</Field>
             </dl>
             <div className="mt-3 divide-y divide-line border-y border-line">
-              <details className="py-4"><summary className="text-[13px] font-medium text-ink">Personal & professional</summary><dl className="mt-3 grid grid-cols-2 gap-x-5">
+              <Disclosure title="Personal & professional"><dl className="grid grid-cols-2 gap-x-5">
                 <Field label="Gender">{customer.gender}</Field><Field label="Date of birth">{customer.dob}</Field>
                 <Field label="Education">{customer.degree}</Field><Field label="College">{customer.undergradCollege}</Field>
                 <Field label="Income">{customer.incomeDisplay}</Field><Field label="Interests">{customer.hobbies.join(', ')}</Field>
-              </dl></details>
-              <details className="py-4"><summary className="text-[13px] font-medium text-ink">Family & everyday life</summary><dl className="mt-3 grid grid-cols-2 gap-x-5">
+              </dl></Disclosure>
+              <Disclosure title="Family & everyday life"><dl className="grid grid-cols-2 gap-x-5">
                 <Field label="Religion & caste">{customer.religion} · {customer.caste}</Field><Field label="Siblings">{customer.siblings}</Field>
                 <Field label="Family values">{customer.familyValues} · {customer.familyType}</Field><Field label="Mother tongue">{customer.motherTongue}</Field>
                 <Field label="Languages">{customer.languages.join(', ')}</Field><Field label="Pets">{customer.openToPets}</Field>
                 <Field label="Smoking">{customer.smokingHabit}</Field><Field label="Drinking">{customer.drinkingHabit}</Field><Field label="Manglik">{customer.manglikStatus}</Field>
-              </dl></details>
-              <details className="py-4"><summary className="text-[13px] font-medium text-ink">Contact details</summary><dl className="mt-3"><Field label="Email">{customer.email}</Field><Field label="Phone">{customer.phone}</Field></dl></details>
+              </dl></Disclosure>
+              <Disclosure title="Contact details"><dl><Field label="Email">{customer.email}</Field><Field label="Phone">{customer.phone}</Field></dl></Disclosure>
             </div>
           </section>
 
@@ -155,7 +162,7 @@ export default function CustomerPage() {
               <label htmlFor="call-note" className="sr-only">Conversation note</label><Textarea id="call-note" name="note" value={note} onChange={(e) => { setNote(e.target.value); setNoteError(''); }} placeholder="What matters to them?" rows={3} className="resize-y" aria-invalid={Boolean(noteError)} aria-describedby={noteError ? 'note-error' : undefined} />
               <div className="flex items-center justify-between gap-2"><span className="text-[10px] text-muted">Private · saved in this browser</span><Button type="submit" size="sm" disabled={!note.trim()}>Save note</Button></div>
             </form>
-            {noteError && <p id="note-error" role="alert" className="mt-3 text-[12px] leading-5 text-warning">{noteError}</p>}<details className="mt-4 border-t border-line-strong pt-4"><summary className="text-[12px] text-muted">Previous notes ({notes.length})</summary><div className="mt-2 divide-y divide-line-strong">{notes.map((item) => <article key={item.id} className="py-3"><p className="text-[11px] font-medium text-accent">{item.category}</p><p className="mt-2 whitespace-pre-wrap text-[13px] leading-6">{item.content}</p><p className="mt-2 text-[10px] text-muted">{item.author} · <time>{item.createdAt}</time></p></article>)}{notes.length === 0 && <p className="py-3 text-[12px] text-muted">Your first conversation can start here.</p>}</div></details>
+            {noteError && <p id="note-error" role="alert" className="mt-3 text-[12px] leading-5 text-warning">{noteError}</p>}<Disclosure title={`Previous notes (${notes.length})`} className="mt-4 border-t border-line-strong" triggerClassName="text-[12px] text-muted"><div className="divide-y divide-line-strong">{notes.map((item) => <article key={item.id} className="py-3"><p className="text-[11px] font-medium text-accent">{item.category}</p><p className="mt-2 whitespace-pre-wrap text-[13px] leading-6">{item.content}</p><p className="mt-2 text-[10px] text-muted">{item.author} · <time>{item.createdAt}</time></p></article>)}{notes.length === 0 && <p className="py-3 text-[12px] text-muted">Your first conversation can start here.</p>}</div></Disclosure>
           </section>
         </aside>
 
@@ -164,14 +171,14 @@ export default function CustomerPage() {
             <div><h2 className="font-display text-[28px] tracking-[-.04em] text-accent sm:text-[32px]">Your shortlist</h2><p className="mt-2 text-[12px] text-muted">{matches.strictMatchCount} core fits · {matches.allOppositeCount} sample profiles to explore</p></div>
             {customer.gender === 'Female' ? <label className="flex min-h-11 items-center gap-2 text-[12px] text-muted"><input type="checkbox" checked={strictOnly} onChange={(e) => { setStrictOnly(e.target.checked); setLimit(12); }} className="h-4 w-4 accent-accent" />Core fits only</label> : <span className="text-[11px] text-muted">Mandatory rules applied</span>}
           </div>
-          {drafts.length > 0 && <details className="mt-5 rounded-[20px] bg-wash px-4 py-1"><summary className="text-[12px] text-accent">Saved introductions ({drafts.length})</summary><div className="divide-y divide-line">{drafts.map((draft) => <div key={draft.id} className="flex flex-wrap items-center justify-between gap-3 py-3"><div><p className="text-[13px]">{draft.candidateName}</p><p className="mt-1 text-[11px] text-muted">{draft.sentAt}</p></div><Button size="sm" variant="outline" onClick={() => { setSend(allMatches.find((match) => match.candidate.id === draft.candidateId) ?? null); setOpenDraft(draft); }}>Open saved draft<span className="sr-only"> for {draft.candidateName}</span></Button></div>)}</div></details>}
+          {drafts.length > 0 && <Disclosure title={`Saved introductions (${drafts.length})`} className="mt-5 bg-wash" triggerClassName="text-[12px] text-accent"><div className="divide-y divide-line">{drafts.map((draft) => <div key={draft.id} className="flex flex-wrap items-center justify-between gap-3 py-3"><div><p className="text-[13px]">{draft.candidateName}</p><p className="mt-1 text-[11px] text-muted">{draft.sentAt}</p></div><Button size="sm" variant="outline" onClick={() => { setSend(allMatches.find((match) => match.candidate.id === draft.candidateId) ?? null); setOpenDraft(draft); }}>Open saved draft<span className="sr-only"> for {draft.candidateName}</span></Button></div>)}</div></Disclosure>}
           <div className="grid gap-2.5 border-b border-line pb-4 pt-5 sm:grid-cols-2 xl:grid-cols-[minmax(150px,1fr)_130px_150px]">
             <label className="relative sm:col-span-2 xl:col-span-1"><span className="sr-only">Search potential introductions</span><Search size={15} aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" /><Input value={search} onChange={(e) => { setSearch(e.target.value); setLimit(12); }} placeholder="Find someone" className="h-11 bg-surface pl-10" /></label>
             <Select label="Filter by city" value={city} onValueChange={(value) => { setCity(value); setLimit(12); }} options={[{ value: 'All', label: 'Any city' }, ...cities.map((value) => ({ value, label: value }))]} className="h-11" />
             <Select label="Filter by diet" value={diet} onValueChange={(value) => { setDiet(value); setLimit(12); }} options={[{ value: 'All', label: 'Any diet' }, ...['Vegetarian', 'Non-Vegetarian', 'Eggetarian', 'Jain', 'Vegan'].map((value) => ({ value, label: value }))]} className="h-11" />
           </div>
           <p role="status" className="py-3 text-[11px] text-muted">{matches.results.length} profiles · Fit guide out of 100, not a prediction</p>
-          <div className="divide-y divide-line">
+          <div className="shortlist-list divide-y divide-line">
             {matches.results.slice(0, limit).map((match) => {
               const person = match.candidate;
               const sent = drafts.some((draft) => draft.candidateId === person.id);
@@ -191,33 +198,29 @@ export default function CustomerPage() {
                     : person.openToRelocate === 'Maybe' || customer.openToRelocate === 'Maybe'
                       ? `Worth discussing · ${customer.city} ↔ ${person.city}`
                       : `Neither is open to relocating · ${customer.city} ↔ ${person.city}`;
-              return <article key={person.id} className="py-6 first:pt-3">
+              const locationWorks = customer.city === person.city || person.openToRelocate === 'Yes' || customer.openToRelocate === 'Yes';
+              return <article key={person.id} className="py-4 first:pt-2">
               <div className="flex items-start justify-between gap-4">
-                <div className="flex min-w-0 items-center gap-3"><span aria-hidden><ProfileAvatar profileId={person.id} firstName={person.firstName} lastName={person.lastName} gender={person.gender} size="lg" /></span><div className="min-w-0"><h3 className="font-display text-[24px] leading-tight tracking-[-.03em] text-ink">{person.firstName} {person.lastName}</h3><p className="mt-2 text-[12px] text-muted">{person.age} · {person.city} · {person.heightDisplay}</p></div></div>
-                <div className="shrink-0 text-right"><span className="font-display text-[25px] leading-none text-accent">{match.totalScore}<span className="text-[12px] text-muted"> / 100</span></span><p className="mt-1.5 text-[10px] text-muted">Fit guide</p></div>
+                <div className="flex min-w-0 items-center gap-3"><span aria-hidden><ProfileAvatar profileId={person.id} firstName={person.firstName} lastName={person.lastName} gender={person.gender} size="lg" /></span><div className="min-w-0"><h3 className="font-display text-[22px] leading-tight tracking-[-.03em] text-ink">{person.firstName} {person.lastName}</h3><p className="mt-1 text-[11px] text-muted">{person.age} · {person.city} · {person.heightDisplay}</p></div></div>
+                <div className="shrink-0 text-right"><span aria-label={`Fit guide: ${match.totalScore} out of 100`} className="font-display text-[25px] leading-none text-accent">{match.totalScore}<span aria-hidden="true" className="text-[12px] text-muted"> / 100</span></span>{match.passesAllStrictRules && <div className="mt-1.5"><FitBadge>{customer.gender === 'Male' ? '4 rules met' : 'Core fit'}</FitBadge></div>}</div>
               </div>
-              <div className="mt-5 grid gap-4 border-y border-line py-4 xl:grid-cols-[1.15fr_.9fr_1.25fr]">
+              <div className="candidate-facts mt-3 border-y border-line py-3">
                 <section className="min-w-0" aria-label={`${person.firstName}'s work and education`}>
-                  <h4 className="text-[10px] font-medium uppercase tracking-[.15em] text-accent">Work & study</h4>
-                  <p className="mt-3 text-[13px] leading-5 text-ink"><span className="font-medium">{person.designation}</span><span className="text-muted"> · {person.company}</span></p>
-                  <p className="mt-1 text-[12px] leading-5 text-muted">{person.degree} · {person.undergradCollege}</p>
+                  <p className="text-[13px] leading-5 text-ink"><span className="font-medium">{person.designation}</span><span className="text-muted"> · {person.company}</span></p>
+                  <p className="mt-1 text-[11px] leading-5 text-muted">{person.degree} · {person.undergradCollege}</p>
+                  {person.hobbies.length > 0 && <p className="mt-1 text-[11px] leading-5 text-muted">{person.hobbies.slice(0, 2).join(' · ')}</p>}
                 </section>
-                <section className="min-w-0 border-t border-line pt-4 xl:border-l xl:border-t-0 xl:pl-5 xl:pt-0" aria-label={`${person.firstName}'s interests`}>
-                  <h4 className="text-[10px] font-medium uppercase tracking-[.15em] text-accent">After hours</h4>
-                  <ul className="mt-3 flex flex-wrap gap-2">
-                    {person.hobbies.length > 0 ? person.hobbies.slice(0, 2).map((hobby) => <li key={hobby} className="inline-flex min-h-9 items-center rounded-full bg-accent-soft/55 px-3.5 text-[12px] text-ink">{hobby}</li>) : <li className="text-[12px] text-muted">Not shared yet</li>}
-                  </ul>
-                </section>
-                <section className="min-w-0 border-t border-line pt-4 xl:border-l xl:border-t-0 xl:pl-5 xl:pt-0" aria-label="Shared preferences">
-                  <h4 className="text-[10px] font-medium uppercase tracking-[.15em] text-accent">Where your lives align</h4>
-                  <ul className="mt-3 space-y-2.5">
-                    <li className="flex items-center gap-2.5"><span className="grid size-8 shrink-0 place-items-center rounded-full bg-accent-soft/55 text-accent"><UsersRound size={14} aria-hidden="true" /></span><p className="min-w-0 text-[12px] leading-5"><span className="font-medium text-ink">Children</span><span className="text-muted"> · {childrenSummary}</span></p></li>
-                    <li className="flex items-center gap-2.5"><span className="grid size-8 shrink-0 place-items-center rounded-full bg-accent-soft/55 text-accent"><MapPin size={14} aria-hidden="true" /></span><p className="min-w-0 text-[12px] leading-5"><span className="font-medium text-ink">Relocation</span><span className="text-muted"> · {relocationSummary}</span></p></li>
+                <section className="candidate-alignment min-w-0" aria-label="Shared preferences">
+                  <ul className="space-y-2">
+                    <li className="flex items-center gap-2"><span className={`grid size-6 shrink-0 place-items-center rounded-full ${customer.wantKids === person.wantKids ? 'bg-success-soft text-success' : 'bg-warning-soft text-warning'}`}><UsersRound size={12} aria-hidden="true" /></span><p className="min-w-0 text-[12px] leading-5 text-muted">{childrenSummary}</p></li>
+                    <li className="flex items-center gap-2"><span className={`grid size-6 shrink-0 place-items-center rounded-full ${locationWorks ? 'bg-success-soft text-success' : 'bg-warning-soft text-warning'}`}><MapPin size={12} aria-hidden="true" /></span><p className="min-w-0 text-[12px] leading-5 text-muted">{relocationSummary}</p></li>
                   </ul>
                 </section>
               </div>
-              {match.frictionFlags[0] && <p className="mt-3 text-[12px] leading-5 text-accent">Worth discussing: {match.frictionFlags[0]}</p>}
-              <div className="mt-4 flex flex-wrap items-center gap-2.5"><Button size="md" variant="outline" onClick={() => setInspect(match)}>Compare details</Button><Button size="md" onClick={() => { setOpenDraft(null); setSend(match); }}>{sent ? 'Open saved draft' : 'Send match'}</Button>{match.passesAllStrictRules && <span className="ml-auto text-[10px] text-calm">Core rules align</span>}</div>
+              <div className="candidate-actions mt-3">
+                {match.frictionFlags[0] && <p className="mr-auto min-w-0 flex-1 basis-full text-[11px] leading-5 text-muted sm:basis-auto"><span className="font-medium text-warning">Discuss:</span> {match.frictionFlags[0]}</p>}
+                <div className="flex flex-wrap gap-2"><Button size="md" variant="outline" onClick={() => setInspect(match)}>Compare details</Button><Button size="md" onClick={() => { setOpenDraft(null); setSend(match); }}>{sent ? 'Open saved draft' : 'Send match'}</Button></div>
+              </div>
               </article>;
             })}
             {matches.results.length === 0 && <div className="py-12 text-center"><Image src="/images/tdc-empty-bougainvillea-v1.webp" alt="" aria-hidden width={120} height={80} className="mx-auto mb-2 h-16 w-24 object-contain" /><h3 className="font-display text-[23px] text-accent">A little more room to explore.</h3><p className="mt-2 text-[13px] text-muted">No profiles match these filters.</p><Button variant="ghost" className="mt-4" onClick={() => { setSearch(''); setCity('All'); setDiet('All'); setStrictOnly(false); setLimit(12); }}>Clear filters</Button></div>}

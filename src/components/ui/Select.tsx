@@ -1,6 +1,7 @@
 'use client';
 
 import * as SelectPrimitive from '@radix-ui/react-select';
+import { useState } from 'react';
 import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from './primitives';
 
@@ -13,13 +14,14 @@ export function Select({ value, onValueChange, options, label, id, className, di
   className?: string;
   disabled?: boolean;
 }) {
+  const [keyboard, setKeyboard] = useState(false);
   return <SelectPrimitive.Root value={value} onValueChange={onValueChange} disabled={disabled}>
-    <SelectPrimitive.Trigger id={id} aria-label={label} className={cn('select-trigger pressable', className)}>
+    <SelectPrimitive.Trigger id={id} aria-label={label} data-motion={keyboard ? 'instant' : 'pointer'} onPointerDown={() => setKeyboard(false)} onKeyDown={() => setKeyboard(true)} className={cn('select-trigger pressable', className)}>
       <SelectPrimitive.Value />
       <SelectPrimitive.Icon className="select-chevron"><ChevronDown size={15} aria-hidden /></SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
     <SelectPrimitive.Portal>
-      <SelectPrimitive.Content position="popper" sideOffset={8} collisionPadding={12} className="select-menu">
+      <SelectPrimitive.Content position="popper" sideOffset={8} collisionPadding={12} data-motion={keyboard ? 'instant' : 'pointer'} onKeyDown={() => setKeyboard(true)} className="select-menu">
         <SelectPrimitive.ScrollUpButton className="select-scroll"><ChevronUp size={15} aria-hidden /></SelectPrimitive.ScrollUpButton>
         <SelectPrimitive.Viewport className="select-viewport">
           {options.map((option) => <SelectPrimitive.Item key={option.value} value={option.value} className="select-option">

@@ -1,9 +1,16 @@
 import * as React from 'react';
 import Image from 'next/image';
+import { Check } from 'lucide-react';
 import { JourneyStage } from '@/lib/types';
 
 export function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(' ');
+}
+
+export function FitBadge({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <span className={cn('inline-flex max-w-full items-center gap-1 rounded-full border border-success/15 bg-success-soft px-2 py-0.5 text-[10px] font-medium leading-4 text-success', className)}>
+    <Check size={11} className="shrink-0" aria-hidden /><span className="min-w-0">{children}</span>
+  </span>;
 }
 
 /* BUTTON */
@@ -84,10 +91,10 @@ const STAGE_STYLES: Record<
     dot: 'bg-faint',
   },
   'Profile Verified': {
-    bg: 'bg-warning-soft',
-    text: 'text-warning',
-    border: 'border-line-strong',
-    dot: 'bg-warning',
+    bg: 'bg-success-soft',
+    text: 'text-success',
+    border: 'border-success/15',
+    dot: 'bg-success',
   },
   'Sourcing Matches': {
     bg: 'bg-line',
