@@ -1,6 +1,6 @@
 # The Date Crew Matchmaker MVP
 
-A local demo of a private matchmaker workspace: an open client book, complete client context, considered comparisons and editable introduction drafts. The current interface uses DM Sans, rose-white surfaces and mulberry accents. The illustrative couple photograph appears at sign-in only. All people and profile details are seeded sample data.
+A hosted assessment demo of a private matchmaker workspace: an open client book, complete client context, considered comparisons and editable introduction drafts. The current interface uses DM Sans, rose-white surfaces and mulberry accents. The illustrative couple photograph appears at sign-in only. All people and profile details are seeded sample data.
 
 ## Demo sign-in
 
@@ -38,7 +38,7 @@ Open `http://localhost:3000`.
 
 ## Verification record — 13 October 2026
 
-- The latest production rebuild completed successfully and the local production server is running with the local Gemini key loaded.
+- The latest production build completed with Next.js 16.4, React 19.3 and Tailwind CSS 4.3. `npm run typecheck`, the matching, API, introduction-lifecycle and storage self-checks passed; `npm audit` reports zero vulnerabilities.
 - Browser sign-in/sign-out, the desktop client book and client profile were checked. Invalid credentials showed an inline error while retaining the fields; Fill demo details replaced the values and cleared the error. At 375px, client-book filters, empty results and clear-filter recovery worked.
 - A note and journey stage persisted after reload. Draft editing, saving, reopening and reload persistence were checked. Dirty-close and tone-replacement choices protected the text.
 - Comparison closed with Escape and returned focus to the invoking control; its visible mulberry focus outline measured 2px. Reduced-motion emulation showed a 100ms modal fade. The recorded console collection returned `[]`.
@@ -54,7 +54,7 @@ The root route redirects to the client book and unknown routes show branded reco
 - Desktop and mobile mockup concepts: `TDC_All_Pages_Mockup.png` and `TDC_All_Pages_Mobile_Mockup.png`.
 - Successful provider result: `TDC_Gemini_Live_Result.jpg`.
 
-Real-phone keyboard/touch/motion and complete assistive-technology/focus coverage remain unverified. Hosting deployment and repository handoff are not claimed by this local record. No email is sent; the brief permits a mock email/modal interaction, and real delivery is outside the prototype scope. A successful build does not make client-side authentication production-ready. Page navigation or reload can still lose unsaved edits. The source includes a custom Radix select for every app dropdown, themed text fields/textareas, checkboxes, disclosure markers, scrollbars, and modal states. Browser/OS-owned surfaces such as password managers, native permission prompts, IME menus and context menus remain system UI. Current all-page mobile captures and mockup boards are listed in the playbook. The Gemini result screenshot is `TDC_Gemini_Live_Result.jpg` in the task workspace outputs. See the playbook for design references, exact source values, mockup interpretation and remaining limits.
+Real-phone keyboard/touch/motion and complete assistive-technology/focus coverage remain unverified. No email is sent; the applicant will prepare that separately. A successful build does not make client-side authentication production-ready. Page navigation or reload can still lose unsaved edits. The source includes a custom Radix select for every app dropdown, themed text fields/textareas, checkboxes, disclosure markers, scrollbars, and modal states. Browser/OS-owned surfaces such as password managers, native permission prompts, IME menus and context menus remain system UI. Current all-page mobile captures and mockup boards are listed in the playbook. The Gemini result screenshot is `TDC_Gemini_Live_Result.jpg` in the task workspace outputs. See the playbook for design references, exact source values, mockup interpretation and remaining limits.
 
 ## Main code paths
 
