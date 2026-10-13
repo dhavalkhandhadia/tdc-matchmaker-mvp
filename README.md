@@ -44,6 +44,7 @@ Open `http://localhost:3000`.
 ## Verification record — 13 October 2026
 
 - The latest production build completed with Next.js 16.4, React 19.3 and Tailwind CSS 4.3. `npm run typecheck`, the matching, API, introduction-lifecycle and storage self-checks passed; `npm audit` reports zero vulnerabilities.
+- The public Vercel alias opened without team sign-in. Demo sign-in, the ten-client book, Aarav's shortlist and the introduction flow worked. Gemini generated a Chitra introduction that saved and reopened in the browser; no email was sent.
 - Browser sign-in/sign-out, the desktop client book and client profile were checked. Invalid credentials showed an inline error while retaining the fields; Fill demo details replaced the values and cleared the error. At 375px, client-book filters, empty results and clear-filter recovery worked.
 - A note and journey stage persisted after reload. Draft editing, saving, reopening and reload persistence were checked. Dirty-close and tone-replacement choices protected the text.
 - Comparison closed with Escape and returned focus to the invoking control; its visible mulberry focus outline measured 2px. Reduced-motion emulation showed a 100ms modal fade. The recorded console collection returned `[]`.
